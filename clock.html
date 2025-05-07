@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>カスタムスタート時計</title>
+  <style>
+    body {
+      background-color: black;
+      color: orange;
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    input, button {
+      font-size: 20px;
+      margin: 5px;
+    }
+    #display {
+      font-size: 80px;
+      margin-top: 30px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>カスタムスタート時計</h1>
+  <label>開始時刻（hh:mm:ss）<input id="startTime" value="00:00:00"></label><br>
+  <button onclick="startClock()">スタート</button>
+  <button onclick="stopClock()">ストップ</button>
+  <button onclick="resetClock()">リセット</button>
+  <div id="display">00:00:00</div>
+
+  <script>
+    let timer = null;
+    let current = 0;
+    let isRunning = false;
+    let hasStarted = false; // ← これを追加
+
+    function parseTimeString(str) {
+      const parts = str.split(':').map(Number);
+      return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    }
+
+    function formatTime(sec) {
+      const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${h}:${m}:${s}`;
+    }
+
+    function updateDisplay() {
+      document.getElementById('display').textContent = formatTime(current);
+    }
+
+    function startClock() {
+      if (isRunning) return;
+      if (!hasStarted) {
+        current = parseTimeString(document.getElementById('startTime').value);
+        hasStarted = true;
+      }
+      updateDisplay();
+      isRunning = true;
+      timer = setInterval(() => {
+        current++;
+        updateDisplay();
+      }, 1000);
+    }
+
+    function stopClock() {
+      clearInterval(timer);
+      timer = null;
+      isRunning = false;
+    }
+
+    function resetClock() {
+      stopClock();
+      current = 0;
+      hasStarted = false;
+      updateDisplay();
+    }
+  </script>
+</body>
+</html>
